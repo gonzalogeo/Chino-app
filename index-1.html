@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1a0a00" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="汉字 HanziApp" />
+  <meta name="description" content="Aprende chino básico de forma didáctica — orígenes, significados y pronunciación" />
+  <title>汉字 — Aprende Chino</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Noto+Sans+SC:wght@300;400;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #c0392b;
+      --red-light: #e74c3c;
+      --gold: #f0a500;
+      --gold-light: #f9d423;
+      --ink: #1a0a00;
+      --paper: #fdf6e3;
+      --paper-dark: #f5e6c8;
+      --stone: #8d6e63;
+      --jade: #2e7d5e;
+      --sky: #1565c0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--ink);
+      color: var(--paper);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── SPLASH / HOME ── */
+    #splash {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 60% 30%, #3b0a00 0%, var(--ink) 70%);
+      position: relative;
+      overflow: hidden;
+    }
+    #splash::before {
+      content: '山水画';
+      position: absolute;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 28vw;
+      color: rgba(255,255,255,0.03);
+      top: -5%;
+      right: -10%;
+      line-height: 1;
+      pointer-events: none;
+    }
+    .splash-title {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: clamp(5rem, 20vw, 9rem);
+      color: var(--gold);
+      text-shadow: 0 0 60px rgba(240,165,0,0.5);
+      animation: float 4s ease-in-out infinite;
+      line-height: 1;
+    }
+    .splash-sub {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1rem, 4vw, 1.4rem);
+      color: var(--paper-dark);
+      margin-top: 0.5rem;
+      letter-spacing: 0.15em;
+      opacity: 0.85;
+    }
+    .splash-desc {
+      font-size: 0.9rem;
+      color: var(--stone);
+      margin-top: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+    .btn-start {
+      margin-top: 3rem;
+      padding: 1rem 3rem;
+      background: linear-gradient(135deg, var(--red), #8b0000);
+      color: var(--gold-light);
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.2em;
+      box-shadow: 0 0 30px rgba(192,57,43,0.5);
+      transition: all 0.3s;
+    }
+    .btn-start:hover, .btn-start:active {
+      background: linear-gradient(135deg, var(--red-light), var(--red));
+      box-shadow: 0 0 50px rgba(231,76,60,0.7);
+      transform: translateY(-2px);
+    }
+    .install-hint {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: var(--stone);
+      text-align: center;
+      opacity: 0.7;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* ── NAV ── */
+    #app { display: none; flex-direction: column; min-height: 100vh; }
+    .topbar {
+      background: rgba(26,10,0,0.97);
+      border-bottom: 1px solid rgba(240,165,0,0.3);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .topbar-title {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 1.6rem;
+      color: var(--gold);
+    }
+    .topbar-sub {
+      font-size: 0.75rem;
+      color: var(--stone);
+      flex: 1;
+    }
+    .xp-badge {
+      background: linear-gradient(135deg, var(--gold), #b8860b);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 20px;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      background: #0f0500;
+      border-bottom: 2px solid rgba(240,165,0,0.15);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      flex: 1;
+      min-width: 70px;
+      padding: 0.7rem 0.5rem;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--stone);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.25s;
+      white-space: nowrap;
+    }
+    .tab.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+    .tab-icon { font-size: 1.3rem; display: block; }
+
+    /* ── PAGES ── */
+    .page { display: none; padding: 1rem; animation: fadeIn 0.3s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(240,165,0,0.4), transparent);
+    }
+
+    /* ── CHARACTER CARD ── */
+    .char-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+    }
+    .char-card {
+      background: linear-gradient(145deg, #2a1200, #1a0a00);
+      border: 1px solid rgba(240,165,0,0.2);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .char-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(240,165,0,0.05), transparent 70%);
+    }
+    .char-card:hover, .char-card:active {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+    .char-han {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 3.5rem;
+      color: var(--gold-light);
+      line-height: 1;
+      text-shadow: 0 0 20px rgba(249,212,35,0.3);
+    }
+    .char-pinyin {
+      font-size: 0.85rem;
+      color: var(--red-light);
+      margin-top: 0.2rem;
+      letter-spacing: 0.05em;
+    }
+    .char-meaning {
+      font-size: 0.75rem;
+      color: var(--paper-dark);
+      margin-top: 0.3rem;
+      opacity: 0.8;
+    }
+    .char-tag {
+      display: inline-block;
+      background: rgba(46,125,94,0.3);
+      color: #4caf50;
+      font-size: 0.6rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      margin-top: 0.4rem;
+      border: 1px solid rgba(76,175,80,0.3);
+    }
+
+    /* ── MODAL / DETAIL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 200;
+      align-items: flex-end;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: linear-gradient(160deg, #2a1200, #1a0800);
+      border-top: 2px solid var(--gold);
+      border-radius: 20px 20px 0 0;
+      padding: 1.5rem;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
+    .modal-han {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: clamp(5rem, 20vw, 8rem);
+      color: var(--gold-light);
+      text-align: center;
+      text-shadow: 0 0 40px rgba(249,212,35,0.4);
+      line-height: 1;
+    }
+    .modal-pinyin {
+      text-align: center;
+      font-size: 1.4rem;
+      color: var(--red-light);
+      letter-spacing: 0.1em;
+      margin-top: 0.25rem;
+    }
+    .modal-tone {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--stone);
+      margin-top: 0.1rem;
+    }
+    .modal-section {
+      margin-top: 1.2rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.04);
+      border-radius: 8px;
+      border-left: 3px solid var(--gold);
+    }
+    .modal-section h4 {
+      font-family: 'Noto Serif SC', serif;
+      color: var(--gold);
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .modal-section p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--paper-dark);
+    }
+    .modal-section.origin { border-left-color: var(--jade); }
+    .modal-section.origin h4 { color: #4caf50; }
+    .modal-section.examples { border-left-color: var(--sky); }
+    .modal-section.examples h4 { color: #64b5f6; }
+    .example-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+    .example-han { font-family: 'Ma Shan Zheng', cursive; font-size: 1.3rem; color: var(--gold-light); }
+    .example-pin { font-size: 0.75rem; color: var(--red-light); }
+    .example-es { font-size: 0.8rem; color: var(--paper-dark); }
+    .btn-close {
+      display: block;
+      width: 100%;
+      margin-top: 1.2rem;
+      padding: 0.8rem;
+      background: rgba(192,57,43,0.2);
+      border: 1px solid var(--red);
+      color: var(--red-light);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-close:hover { background: rgba(192,57,43,0.4); }
+    .speak-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.8rem;
+      padding: 0.5rem 1.2rem;
+      background: rgba(240,165,0,0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .speak-btn:hover { background: rgba(240,165,0,0.3); }
+    .speak-center { text-align: center; }
+
+    /* ── QUIZ ── */
+    .quiz-card {
+      background: linear-gradient(145deg, #1e0d00, #2a1200);
+      border: 1px solid rgba(240,165,0,0.25);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .quiz-question {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: clamp(4rem, 25vw, 7rem);
+      color: var(--gold-light);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .quiz-prompt {
+      font-size: 0.9rem;
+      color: var(--stone);
+      margin-bottom: 1.5rem;
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .quiz-opt {
+      padding: 0.8rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: var(--paper);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { background: rgba(240,165,0,0.15); border-color: var(--gold); }
+    .quiz-opt.correct { background: rgba(46,125,94,0.3); border-color: #4caf50; color: #a5d6a7; }
+    .quiz-opt.wrong { background: rgba(192,57,43,0.3); border-color: var(--red); color: #ef9a9a; }
+    .quiz-opt:disabled { cursor: default; }
+    .quiz-feedback {
+      min-height: 2.5rem;
+      font-size: 1rem;
+      font-family: 'Noto Serif SC', serif;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .btn-next {
+      padding: 0.8rem 2rem;
+      background: linear-gradient(135deg, var(--red), #8b0000);
+      color: var(--gold-light);
+      border: 1px solid var(--gold);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Noto Serif SC', serif;
+      letter-spacing: 0.1em;
+    }
+    .btn-next:hover { box-shadow: 0 0 20px rgba(192,57,43,0.5); }
+    .quiz-score {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1rem;
+    }
+    .score-item { text-align: center; }
+    .score-num { font-size: 2rem; font-weight: 700; color: var(--gold); }
+    .score-label { font-size: 0.7rem; color: var(--stone); }
+
+    /* ── NAMES PAGE ── */
+    .name-search {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .name-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(240,165,0,0.3);
+      border-radius: 8px;
+      color: var(--paper);
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .name-input:focus { border-color: var(--gold); }
+    .name-input::placeholder { color: var(--stone); }
+    .btn-search {
+      padding: 0.75rem 1.2rem;
+      background: var(--red);
+      border: none;
+      border-radius: 8px;
+      color: var(--gold-light);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .name-result {
+      background: linear-gradient(145deg, #2a1200, #1a0800);
+      border: 1px solid rgba(240,165,0,0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: none;
+    }
+    .name-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .name-chinese {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: clamp(3rem, 15vw, 5rem);
+      color: var(--gold-light);
+      text-align: center;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 30px rgba(249,212,35,0.3);
+    }
+    .name-pinyin-row {
+      text-align: center;
+      font-size: 1rem;
+      color: var(--red-light);
+      margin-bottom: 1rem;
+      letter-spacing: 0.1em;
+    }
+    .name-char-breakdown {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .name-char-box {
+      flex: 1;
+      min-width: 100px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(240,165,0,0.2);
+      border-radius: 8px;
+      padding: 0.8rem;
+      text-align: center;
+    }
+    .name-char-han { font-family: 'Ma Shan Zheng', cursive; font-size: 2.2rem; color: var(--gold-light); }
+    .name-char-pin { font-size: 0.75rem; color: var(--red-light); margin: 0.2rem 0; }
+    .name-char-meaning { font-size: 0.75rem; color: var(--paper-dark); }
+    .popular-names {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+    .pop-name-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(240,165,0,0.2);
+      border-radius: 8px;
+      padding: 0.6rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pop-name-btn:hover { border-color: var(--gold); background: rgba(240,165,0,0.1); }
+    .pop-han { font-family: 'Ma Shan Zheng', cursive; font-size: 1.4rem; color: var(--gold-light); }
+    .pop-es { font-size: 0.7rem; color: var(--stone); margin-top: 0.1rem; }
+
+    /* ── STROKES PAGE ── */
+    .stroke-info {
+      background: rgba(255,255,255,0.04);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 3px solid var(--sky);
+    }
+    .stroke-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 0.6rem;
+    }
+    .stroke-card {
+      background: linear-gradient(145deg, #1e0d00, #2a1200);
+      border: 1px solid rgba(240,165,0,0.15);
+      border-radius: 8px;
+      padding: 0.8rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .stroke-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .stroke-han { font-family: 'Ma Shan Zheng', cursive; font-size: 2.5rem; color: var(--gold-light); }
+    .stroke-name { font-size: 0.7rem; color: var(--stone); margin-top: 0.2rem; }
+    .stroke-count { font-size: 0.65rem; color: var(--jade); margin-top: 0.1rem; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      height: 6px;
+      margin: 0.5rem 0 1rem;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--red), var(--gold));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    /* ── RADICALS ── */
+    .radical-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.6rem;
+    }
+    .radical-card {
+      background: linear-gradient(145deg, #1e0d00, #2a1200);
+      border: 1px solid rgba(240,165,0,0.15);
+      border-radius: 8px;
+      padding: 0.8rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .radical-card:hover { border-color: var(--gold); }
+    .radical-han { font-family: 'Ma Shan Zheng', cursive; font-size: 2.2rem; color: var(--gold-light); }
+    .radical-meaning { font-size: 0.65rem; color: var(--stone); margin-top: 0.2rem; }
+    .radical-pin { font-size: 0.7rem; color: var(--red-light); margin-top: 0.1rem; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(240,165,0,0.3); border-radius: 2px; }
+
+    /* ── INSTALL BANNER ── */
+    #install-banner {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, #1a0800, #2a1200);
+      border-top: 1px solid var(--gold);
+      padding: 1rem;
+      z-index: 300;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    #install-banner.show { display: flex; }
+    .install-text { flex: 1; font-size: 0.85rem; color: var(--paper-dark); }
+    .install-text strong { color: var(--gold); }
+    .btn-install {
+      padding: 0.5rem 1rem;
+      background: var(--gold);
+      color: var(--ink);
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-install-dismiss {
+      background: none;
+      border: none;
+      color: var(--stone);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0 0.3rem;
+    }
+
+    /* Tones colors */
+    .t1 { color: #64b5f6; }
+    .t2 { color: #a5d6a7; }
+    .t3 { color: #ffcc80; }
+    .t4 { color: #ef9a9a; }
+    .t5 { color: #ce93d8; }
+  </style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-title">汉字</div>
+  <div class="splash-sub">Aprende Chino Básico</div>
+  <div class="splash-desc">Caracteres · Nombres · Origen · Significados</div>
+  <button class="btn-start" onclick="startApp()">开始学习 — Comenzar</button>
+  <div class="install-hint">💡 Instala como app: menú del navegador → "Añadir a pantalla de inicio"</div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-title">汉字</div>
+    <div class="topbar-sub">Aprende Chino</div>
+    <div class="xp-badge" id="xp-badge">⭐ 0 XP</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('chars')"><span class="tab-icon">字</span>Caracteres</div>
+    <div class="tab" onclick="showTab('names')"><span class="tab-icon">名</span>Nombres</div>
+    <div class="tab" onclick="showTab('radicals')"><span class="tab-icon">部</span>Radicales</div>
+    <div class="tab" onclick="showTab('quiz')"><span class="tab-icon">✍</span>Quiz</div>
+  </div>
+
+  <!-- CARACTERES -->
+  <div class="page active" id="page-chars">
+    <div class="section-title">🎯 Caracteres Básicos HSK 1</div>
+    <div class="char-grid" id="char-grid"></div>
+  </div>
+
+  <!-- NOMBRES -->
+  <div class="page" id="page-names">
+    <div class="section-title">👤 Nombres en Chino</div>
+    <div class="name-search">
+      <input class="name-input" id="name-input" type="text" placeholder="Escribe tu nombre (ej: Ana, Luis…)" maxlength="20" />
+      <button class="btn-search" onclick="lookupName()">🔍</button>
+    </div>
+    <div class="name-result" id="name-result"></div>
+    <div class="section-title" style="margin-top:1.5rem">⭐ Nombres Populares</div>
+    <div class="popular-names" id="popular-names"></div>
+  </div>
+
+  <!-- RADICALES -->
+  <div class="page" id="page-radicals">
+    <div class="section-title">🧩 Radicales Chinos</div>
+    <div class="stroke-info">
+      <p style="font-size:0.85rem;color:var(--paper-dark);line-height:1.6">
+        Los <strong style="color:var(--gold)">radicales</strong> son los componentes básicos de los caracteres chinos. 
+        Conocerlos es clave para entender el origen y significado de miles de caracteres. 
+        El diccionario chino usa <strong style="color:var(--gold)">214 radicales</strong> estándar.
+      </p>
+    </div>
+    <div class="radical-grid" id="radical-grid"></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="page" id="page-quiz">
+    <div class="section-title">🧠 Practica y Aprende</div>
+    <div class="quiz-score">
+      <div class="score-item"><div class="score-num" id="q-correct">0</div><div class="score-label">✅ Correctas</div></div>
+      <div class="score-item"><div class="score-num" id="q-streak">0</div><div class="score-label">🔥 Racha</div></div>
+      <div class="score-item"><div class="score-num" id="q-xp">0</div><div class="score-label">⭐ XP</div></div>
+    </div>
+    <div class="quiz-card" id="quiz-card">
+      <div class="quiz-question" id="q-char">字</div>
+      <div class="quiz-prompt" id="q-prompt">¿Qué significa este carácter?</div>
+      <div class="quiz-options" id="q-options"></div>
+      <div class="quiz-feedback" id="q-feedback"></div>
+      <button class="btn-next" id="q-next" onclick="nextQuestion()" style="display:none">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETAIL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner">
+  <div class="install-text"><strong>📱 Instala la app</strong><br>Añade 汉字 a tu pantalla de inicio</div>
+  <button class="btn-install" id="btn-install">Instalar</button>
+  <button class="btn-install-dismiss" onclick="dismissInstall()">✕</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+const CHARS = [
+  { han: '人', pinyin: 'rén', tone: 2, meaning: 'Persona, ser humano', tag: 'Sustantivo',
+    origin: 'Pictograma de un ser humano de pie visto de perfil. Una de las formas más antiguas del chino oracle bone, datada hace ~3,500 años.',
+    mnemonic: 'Imagina dos piernas: una persona parada.',
+    examples: [
+      { han: '人口', pin: 'rénkǒu', es: 'Población' },
+      { han: '中国人', pin: 'Zhōngguórén', es: 'Persona china' },
+      { han: '好人', pin: 'hǎorén', es: 'Buena persona' }
+    ]
+  },
+  { han: '日', pinyin: 'rì', tone: 4, meaning: 'Sol, día', tag: 'Sustantivo',
+    origin: 'Pictograma del sol. Originalmente era un círculo con un punto en el centro. Con el tiempo se cuadró para facilitar la escritura con pincel.',
+    mnemonic: 'Un cuadrado con línea = ventana por donde entra el sol.',
+    examples: [
+      { han: '日本', pin: 'Rìběn', es: 'Japón (origen del sol)' },
+      { han: '今日', pin: 'jīnrì', es: 'Hoy' },
+      { han: '日记', pin: 'rìjì', es: 'Diario' }
+    ]
+  },
+  { han: '月', pinyin: 'yuè', tone: 4, meaning: 'Luna, mes', tag: 'Sustantivo',
+    origin: 'Pictograma de una luna creciente. La luna menguante representaba el paso del tiempo y el ciclo mensual en la antigüedad china.',
+    mnemonic: 'La forma curvada recuerda a la luna en cuarto creciente.',
+    examples: [
+      { han: '月亮', pin: 'yuèliang', es: 'La luna' },
+      { han: '一月', pin: 'yīyuè', es: 'Enero (mes 1)' },
+      { han: '月饼', pin: 'yuèbǐng', es: 'Pastel de luna' }
+    ]
+  },
+  { han: '山', pinyin: 'shān', tone: 1, meaning: 'Montaña', tag: 'Sustantivo',
+    origin: 'Pictograma de tres picos de montaña. El pico central es más alto. Los antiguos chinos vivían rodeados de montañas sagradas.',
+    mnemonic: 'Tres líneas verticales = tres picos de montaña.',
+    examples: [
+      { han: '山水', pin: 'shānshuǐ', es: 'Paisaje montañoso' },
+      { han: '火山', pin: 'huǒshān', es: 'Volcán' },
+      { han: '山羊', pin: 'shānyáng', es: 'Cabra de montaña' }
+    ]
+  },
+  { han: '水', pinyin: 'shuǐ', tone: 3, meaning: 'Agua', tag: 'Sustantivo',
+    origin: 'Pictograma de agua fluyendo. Las líneas curvas representaban corrientes de agua. Es uno de los cinco elementos fundamentales en la filosofía china.',
+    mnemonic: 'Las líneas onduladas parecen olas o corrientes de agua.',
+    examples: [
+      { han: '水果', pin: 'shuǐguǒ', es: 'Fruta (fruto del agua)' },
+      { han: '热水', pin: 'rèshuǐ', es: 'Agua caliente' },
+      { han: '水平', pin: 'shuǐpíng', es: 'Nivel, horizontal' }
+    ]
+  },
+  { han: '火', pinyin: 'huǒ', tone: 3, meaning: 'Fuego', tag: 'Sustantivo',
+    origin: 'Pictograma de llamas. Las líneas hacia arriba representan el fuego ardiendo. Junto con agua, metal, madera y tierra, forma los cinco elementos.',
+    mnemonic: 'Las líneas apuntando hacia arriba son las llamas del fuego.',
+    examples: [
+      { han: '火车', pin: 'huǒchē', es: 'Tren (carro de fuego)' },
+      { han: '生火', pin: 'shēnghuǒ', es: 'Encender fuego' },
+      { han: '火辣', pin: 'huǒlà', es: 'Picante, ardiente' }
+    ]
+  },
+  { han: '木', pinyin: 'mù', tone: 4, meaning: 'Árbol, madera', tag: 'Sustantivo',
+    origin: 'Pictograma de un árbol con ramas arriba y raíces abajo. Representa la madera como material y los árboles en general.',
+    mnemonic: 'La línea vertical es el tronco, las líneas oblicuas son las ramas.',
+    examples: [
+      { han: '木头', pin: 'mùtou', es: 'Madera, tronco' },
+      { han: '树木', pin: 'shùmù', es: 'Árboles' },
+      { han: '木工', pin: 'mùgōng', es: 'Carpintería' }
+    ]
+  },
+  { han: '土', pinyin: 'tǔ', tone: 3, meaning: 'Tierra, suelo', tag: 'Sustantivo',
+    origin: 'Pictograma que muestra tierra amontonada. La línea superior es la superficie del suelo, la inferior las raíces. Quinto elemento de la filosofía china.',
+    mnemonic: 'Dos líneas horizontales con una vertical = montículo de tierra.',
+    examples: [
+      { han: '土地', pin: 'tǔdì', es: 'Tierra, terreno' },
+      { han: '泥土', pin: 'nítǔ', es: 'Barro, arcilla' },
+      { han: '土豆', pin: 'tǔdòu', es: 'Papa (judía de la tierra)' }
+    ]
+  },
+  { han: '大', pinyin: 'dà', tone: 4, meaning: 'Grande, enorme', tag: 'Adjetivo',
+    origin: 'Pictograma de una persona (人) con los brazos extendidos hacia los lados, indicando "esto es tan grande como mis brazos abiertos".',
+    mnemonic: 'Una persona con brazos abiertos mostrando el tamaño.',
+    examples: [
+      { han: '大学', pin: 'dàxué', es: 'Universidad (gran saber)' },
+      { han: '大家', pin: 'dàjiā', es: 'Todos, todo el mundo' },
+      { han: '伟大', pin: 'wěidà', es: 'Grandioso, ilustre' }
+    ]
+  },
+  { han: '小', pinyin: 'xiǎo', tone: 3, meaning: 'Pequeño, chico', tag: 'Adjetivo',
+    origin: 'Pictograma que muestra algo dividiéndose en partes pequeñas. Dos puntos pequeños a los lados del centro.',
+    mnemonic: 'El punto central con dos puntos pequeños = algo diminuto.',
+    examples: [
+      { han: '小心', pin: 'xiǎoxīn', es: 'Cuidado, tener cuidado' },
+      { han: '小学', pin: 'xiǎoxué', es: 'Escuela primaria' },
+      { han: '小姐', pin: 'xiǎojiě', es: 'Señorita' }
+    ]
+  },
+  { han: '好', pinyin: 'hǎo', tone: 3, meaning: 'Bueno, bien', tag: 'Adjetivo',
+    origin: 'Ideograma compuesto de 女 (mujer) + 子 (hijo). En la antigüedad china, tener una mujer con hijo era sinónimo de buena fortuna y prosperidad.',
+    mnemonic: 'Mujer + Hijo = ¡Bueno! (felicidad familiar).',
+    examples: [
+      { han: '你好', pin: 'nǐ hǎo', es: 'Hola (literalmente: tú bueno)' },
+      { han: '好吃', pin: 'hǎochī', es: 'Delicioso' },
+      { han: '好运', pin: 'hǎoyùn', es: 'Buena suerte' }
+    ]
+  },
+  { han: '爱', pinyin: 'ài', tone: 4, meaning: 'Amor, amar', tag: 'Verbo/Sust.',
+    origin: 'Carácter complejo: contiene 心 (corazón) en el centro. El amor parte del corazón. Usado en contextos románticos, familiares y hacia objetos.',
+    mnemonic: 'El corazón (心) está en el centro del amor.',
+    examples: [
+      { han: '爱情', pin: 'àiqíng', es: 'Amor romántico' },
+      { han: '可爱', pin: 'kě\'ài', es: 'Adorable, lindo' },
+      { han: '爱好', pin: 'àihào', es: 'Hobby, afición' }
+    ]
+  },
+  { han: '心', pinyin: 'xīn', tone: 1, meaning: 'Corazón, mente', tag: 'Sustantivo',
+    origin: 'Pictograma del corazón humano. En la filosofía china, el corazón (心) también es la sede de la mente y el pensamiento, no solo de los sentimientos.',
+    mnemonic: 'Las tres "gotitas" representan las cámaras del corazón latiendo.',
+    examples: [
+      { han: '心里', pin: 'xīnlǐ', es: 'En el corazón, internamente' },
+      { han: '开心', pin: 'kāixīn', es: 'Feliz, contento' },
+      { han: '心意', pin: 'xīnyì', es: 'Intención, sentimiento' }
+    ]
+  },
+  { han: '龙', pinyin: 'lóng', tone: 2, meaning: 'Dragón', tag: 'Sustantivo',
+    origin: 'Pictograma del dragón, criatura sagrada china. A diferencia del dragón occidental (maligno), el dragón chino es símbolo de poder imperial, buena suerte y prosperidad.',
+    mnemonic: 'La forma serpentina recuerda al cuerpo sinuoso del dragón.',
+    examples: [
+      { han: '龙年', pin: 'lóng nián', es: 'Año del Dragón' },
+      { han: '龙虾', pin: 'lóngxiā', es: 'Langosta (camarón dragón)' },
+      { han: '恐龙', pin: 'kǒnglóng', es: 'Dinosaurio (dragón aterrador)' }
+    ]
+  },
+  { han: '福', pinyin: 'fú', tone: 2, meaning: 'Fortuna, suerte', tag: 'Sustantivo',
+    origin: 'Contiene 示 (altar) y 畐 (lleno, abundante). Representa un altar lleno de ofrendas = bendición divina. Se cuelga invertido en año nuevo (倒福) porque 倒 (invertir) suena como 到 (llegar).',
+    mnemonic: 'El altar lleno de ofrendas atrae la buena fortuna.',
+    examples: [
+      { han: '幸福', pin: 'xìngfú', es: 'Felicidad' },
+      { han: '福气', pin: 'fúqì', es: 'Buena suerte, fortuna' },
+      { han: '祝福', pin: 'zhùfú', es: 'Bendición, buenos deseos' }
+    ]
+  },
+  { han: '茶', pinyin: 'chá', tone: 2, meaning: 'Té', tag: 'Sustantivo',
+    origin: 'Compuesto de 草 (hierba/planta) + 木 (árbol/madera) + 人 (persona). Literalmente: "la planta-árbol de las personas". China es la cuna del té hace ~5,000 años.',
+    mnemonic: 'Hierba + árbol + persona: la planta que la gente adora.',
+    examples: [
+      { han: '茶叶', pin: 'cháyè', es: 'Hoja de té' },
+      { han: '绿茶', pin: 'lǜchá', es: 'Té verde' },
+      { han: '茶馆', pin: 'cháguǎn', es: 'Casa de té' }
+    ]
+  }
+];
+
+const NAMES_DB = {
+  'ana': { chinese: '安娜', pinyin: 'Ānnà', chars: [
+    { han: '安', pin: 'ān', meaning: 'Paz, tranquilidad' },
+    { han: '娜', pin: 'nà', meaning: 'Elegante, grácil' }
+  ], meaning: 'Mujer elegante y serena', lucky: '木 (Madera) — creatividad y crecimiento' },
+  'maria': { chinese: '玛丽亚', pinyin: 'Mǎlìyà', chars: [
+    { han: '玛', pin: 'mǎ', meaning: 'Ágata (piedra preciosa)' },
+    { han: '丽', pin: 'lì', meaning: 'Bella, hermosa' },
+    { han: '亚', pin: 'yà', meaning: 'Asia, segunda, noble' }
+  ], meaning: 'Bella como las gemas preciosas de Asia', lucky: '火 (Fuego) — pasión y energía' },
+  'carlos': { chinese: '卡洛斯', pinyin: 'Kǎluòsī', chars: [
+    { han: '卡', pin: 'kǎ', meaning: 'Bloquear, tarjeta' },
+    { han: '洛', pin: 'luò', meaning: 'Río Luo (río histórico)' },
+    { han: '斯', pin: 'sī', meaning: 'Este, civilizado' }
+  ], meaning: 'Noble junto al río del destino', lucky: '金 (Metal) — determinación y valor' },
+  'sofia': { chinese: '索菲亚', pinyin: 'Suǒfēiyà', chars: [
+    { han: '索', pin: 'suǒ', meaning: 'Buscar, explorar' },
+    { han: '菲', pin: 'fēi', meaning: 'Flor fragante' },
+    { han: '亚', pin: 'yà', meaning: 'Noble, elegante' }
+  ], meaning: 'Noble exploradora de flores fragantes', lucky: '木 (Madera) — sabiduría y naturaleza' },
+  'miguel': { chinese: '米格尔', pinyin: 'Mǐgé\'ěr', chars: [
+    { han: '米', pin: 'mǐ', meaning: 'Arroz, sustento' },
+    { han: '格', pin: 'gé', meaning: 'Carácter, estilo' },
+    { han: '尔', pin: 'ěr', meaning: 'Tú, cercano' }
+  ], meaning: 'Hombre de gran carácter y sustento', lucky: '土 (Tierra) — estabilidad y confianza' },
+  'lucia': { chinese: '露西亚', pinyin: 'Lùxīyà', chars: [
+    { han: '露', pin: 'lù', meaning: 'Rocío, luz revelada' },
+    { han: '西', pin: 'xī', meaning: 'Occidente, oeste' },
+    { han: '亚', pin: 'yà', meaning: 'Noble, elegante' }
+  ], meaning: 'Luz noble que viene del oeste', lucky: '水 (Agua) — intuición y fluidez' },
+  'pablo': { chinese: '帕布洛', pinyin: 'Pàbùluò', chars: [
+    { han: '帕', pin: 'pà', meaning: 'Pañuelo, tela fina' },
+    { han: '布', pin: 'bù', meaning: 'Tela, extender' },
+    { han: '洛', pin: 'luò', meaning: 'Río Luo, destino' }
+  ], meaning: 'El que extiende su destino con nobleza', lucky: '火 (Fuego) — liderazgo y ambición' },
+  'laura': { chinese: '劳拉', pinyin: 'Láolā', chars: [
+    { han: '劳', pin: 'láo', meaning: 'Trabajo, esfuerzo' },
+    { han: '拉', pin: 'lā', meaning: 'Tirar, atraer' }
+  ], meaning: 'La que atrae con su esfuerzo y diligencia', lucky: '金 (Metal) — voluntad y perseverancia' },
+  'david': { chinese: '大卫', pinyin: 'Dàwèi', chars: [
+    { han: '大', pin: 'dà', meaning: 'Grande, enorme' },
+    { han: '卫', pin: 'wèi', meaning: 'Proteger, guardar' }
+  ], meaning: 'Gran protector', lucky: '火 (Fuego) — valentía y protección' },
+  'juan': { chinese: '胡安', pinyin: 'Hú\'ān', chars: [
+    { han: '胡', pin: 'hú', meaning: 'Étnico, barba, libre' },
+    { han: '安', pin: 'ān', meaning: 'Paz, tranquilidad' }
+  ], meaning: 'El libre que trae la paz', lucky: '水 (Agua) — sabiduría y calma' },
+  'alejandro': { chinese: '亚历山大', pinyin: 'Yàlìshāndà', chars: [
+    { han: '亚', pin: 'yà', meaning: 'Noble, segundo' },
+    { han: '历', pin: 'lì', meaning: 'Historia, pasar por' },
+    { han: '山', pin: 'shān', meaning: 'Montaña' },
+    { han: '大', pin: 'dà', meaning: 'Grande' }
+  ], meaning: 'Noble que conquista grandes montañas', lucky: '金 (Metal) — poder y conquista' },
+  'isabela': { chinese: '伊莎贝拉', pinyin: 'Yīshābèilā', chars: [
+    { han: '伊', pin: 'yī', meaning: 'Ella, distante y bello' },
+    { han: '莎', pin: 'shā', meaning: 'Planta acuática fragante' },
+    { han: '贝', pin: 'bèi', meaning: 'Concha, tesoro' },
+    { han: '拉', pin: 'lā', meaning: 'Atraer, tirar' }
+  ], meaning: 'Bella como un tesoro del agua', lucky: '水 (Agua) — elegancia y misterio' },
+  'elena': { chinese: '艾莲娜', pinyin: 'Àiliánnà', chars: [
+    { han: '艾', pin: 'ài', meaning: 'Artemisa, noble' },
+    { han: '莲', pin: 'lián', meaning: 'Loto (pureza)' },
+    { han: '娜', pin: 'nà', meaning: 'Grácil, elegante' }
+  ], meaning: 'Noble como el loto, símbolo de pureza', lucky: '木 (Madera) — pureza y renacimiento' },
+  'luis': { chinese: '路易斯', pinyin: 'Lùyìsī', chars: [
+    { han: '路', pin: 'lù', meaning: 'Camino, ruta' },
+    { han: '易', pin: 'yì', meaning: 'Fácil, cambio (I Ching)' },
+    { han: '斯', pin: 'sī', meaning: 'Este, civilizado' }
+  ], meaning: 'El civilizado que camina por el camino del cambio', lucky: '土 (Tierra) — adaptabilidad' },
+};
+
+const POPULAR_NAMES = ['Ana','María','Carlos','Sofía','Miguel','Lucía','Pablo','Laura','David','Juan','Elena','Luis'];
+
+const RADICALS = [
+  { han: '人', pin: 'rén', meaning: 'Persona', examples: '他 (él), 你 (tú), 休 (descansar)' },
+  { han: '口', pin: 'kǒu', meaning: 'Boca', examples: '吃 (comer), 说 (hablar), 唱 (cantar)' },
+  { han: '手', pin: 'shǒu', meaning: 'Mano', examples: '打 (golpear), 拿 (coger), 推 (empujar)' },
+  { han: '心', pin: 'xīn', meaning: 'Corazón', examples: '想 (pensar), 忘 (olvidar), 爱 (amor)' },
+  { han: '水', pin: 'shuǐ', meaning: 'Agua', examples: '海 (mar), 河 (río), 游 (nadar)' },
+  { han: '火', pin: 'huǒ', meaning: 'Fuego', examples: '炒 (freír), 烤 (asar), 灯 (lámpara)' },
+  { han: '木', pin: 'mù', meaning: 'Árbol/Madera', examples: '树 (árbol), 桌 (mesa), 椅 (silla)' },
+  { han: '土', pin: 'tǔ', meaning: 'Tierra', examples: '地 (suelo), 城 (ciudad), 墙 (pared)' },
+  { han: '金', pin: 'jīn', meaning: 'Metal/Oro', examples: '银 (plata), 铁 (hierro), 钱 (dinero)' },
+  { han: '女', pin: 'nǚ', meaning: 'Mujer', examples: '妈 (mamá), 姐 (hermana), 好 (bueno)' },
+  { han: '日', pin: 'rì', meaning: 'Sol/Día', examples: '明 (brillante), 早 (mañana), 晚 (tarde)' },
+  { han: '月', pin: 'yuè', meaning: 'Luna/Mes', examples: '明 (brillante), 胖 (gordo), 朋 (amigo)' },
+  { han: '山', pin: 'shān', meaning: 'Montaña', examples: '岩 (roca), 峰 (cumbre), 崖 (acantilado)' },
+  { han: '草', pin: 'cǎo', meaning: 'Hierba/Planta', examples: '花 (flor), 茶 (té), 药 (medicina)' },
+  { han: '虫', pin: 'chóng', meaning: 'Insecto', examples: '蝴蝶 (mariposa), 蜜蜂 (abeja), 蛇 (serpiente)' },
+  { han: '鱼', pin: 'yú', meaning: 'Pez', examples: '鲸 (ballena), 鲤 (carpa), 鲸 (delfín)' },
+  { han: '马', pin: 'mǎ', meaning: 'Caballo', examples: '骑 (montar), 驾 (conducir), 骏 (caballo veloz)' },
+  { han: '门', pin: 'mén', meaning: 'Puerta', examples: '间 (espacio), 闻 (escuchar/oler), 开 (abrir)' },
+];
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let xp = parseInt(localStorage.getItem('hanzi_xp') || '0');
+let quizCorrect = 0, quizStreak = 0, quizXP = 0;
+let currentQ = null, answered = false;
+let deferredPrompt = null;
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+function startApp() {
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').style.flexDirection = 'column';
+  updateXP(0);
+  renderChars();
+  renderPopularNames();
+  renderRadicals();
+  nextQuestion();
+}
+
+function updateXP(delta) {
+  xp += delta;
+  localStorage.setItem('hanzi_xp', xp);
+  document.getElementById('xp-badge').textContent = `⭐ ${xp} XP`;
+}
+
+// ── TABS ──
+function showTab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'quiz') nextQuestion();
+}
+
+// ══════════════════════════════════════════════
+// CHARS PAGE
+// ══════════════════════════════════════════════
+function renderChars() {
+  const grid = document.getElementById('char-grid');
+  grid.innerHTML = CHARS.map((c, i) => `
+    <div class="char-card" onclick="openModal(${i})">
+      <div class="char-han">${c.han}</div>
+      <div class="char-pinyin">${c.pinyin}</div>
+      <div class="char-meaning">${c.meaning}</div>
+      <div class="char-tag">${c.tag}</div>
+    </div>
+  `).join('');
+}
+
+function openModal(i) {
+  const c = CHARS[i];
+  const toneClass = `t${c.tone}`;
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-han">${c.han}</div>
+    <div class="modal-pinyin ${toneClass}">${c.pinyin}</div>
+    <div class="modal-tone">Tono ${c.tone} ${['','—','↗','↗↘','↘'][c.tone]} | ${c.tag}</div>
+    <div class="speak-center">
+      <button class="speak-btn" onclick="speak('${c.pinyin}')">🔊 Escuchar</button>
+    </div>
+
+    <div class="modal-section">
+      <h4>📖 Significado</h4>
+      <p>${c.meaning}</p>
+    </div>
+
+    <div class="modal-section origin">
+      <h4>🏛️ Origen e Historia</h4>
+      <p>${c.origin}</p>
+    </div>
+
+    <div class="modal-section" style="border-left-color:var(--gold)">
+      <h4>💡 Truco para recordar</h4>
+      <p>${c.mnemonic}</p>
+    </div>
+
+    <div class="modal-section examples">
+      <h4>✏️ Ejemplos en uso</h4>
+      ${c.examples.map(ex => `
+        <div class="example-row">
+          <span class="example-han">${ex.han}</span>
+          <span class="example-pin">${ex.pin}</span>
+          <span class="example-es">— ${ex.es}</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <button class="btn-close" onclick="closeModal()">✕ Cerrar</button>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+  updateXP(2);
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+}
+
+// ══════════════════════════════════════════════
+// NAMES PAGE
+// ══════════════════════════════════════════════
+function renderPopularNames() {
+  document.getElementById('popular-names').innerHTML = POPULAR_NAMES.map(n => {
+    const data = NAMES_DB[n.toLowerCase()];
+    return `
+      <div class="pop-name-btn" onclick="showName('${n.toLowerCase()}')">
+        <div class="pop-han">${data ? data.chinese : '?'}</div>
+        <div class="pop-es">${n}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function lookupName() {
+  const val = document.getElementById('name-input').value.trim().toLowerCase();
+  if (val) showName(val);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('name-input') === document.activeElement) lookupName();
+});
+
+function showName(name) {
+  const data = NAMES_DB[name];
+  const resultEl = document.getElementById('name-result');
+  if (!data) {
+    resultEl.className = 'name-result show';
+    resultEl.innerHTML = `
+      <p style="text-align:center;color:var(--stone);padding:1rem">
+        No tenemos "${name}" en nuestra base de datos aún.<br>
+        <span style="font-size:0.8rem">Prueba: Ana, María, Carlos, Sofía, Miguel, Lucía, Pablo, Laura, David, Juan, Elena, Luis, Alejandro, Isabel</span>
+      </p>
+    `;
+    return;
+  }
+  resultEl.className = 'name-result show';
+  resultEl.innerHTML = `
+    <div class="name-chinese">${data.chinese}</div>
+    <div class="name-pinyin-row">${data.pinyin}</div>
+    <button class="speak-btn" style="margin:0 auto 1rem;display:flex" onclick="speak('${data.pinyin}')">🔊 Pronunciar</button>
+
+    <div class="modal-section" style="border-left-color:var(--gold)">
+      <h4>✨ Significado en Chino</h4>
+      <p>${data.meaning}</p>
+    </div>
+    <div class="modal-section origin">
+      <h4>🍀 Elemento de la Suerte</h4>
+      <p>${data.lucky}</p>
+    </div>
+
+    <h4 style="color:var(--stone);font-size:0.8rem;margin-top:1rem;margin-bottom:0.5rem">ANÁLISIS CARÁCTER A CARÁCTER</h4>
+    <div class="name-char-breakdown">
+      ${data.chars.map(ch => `
+        <div class="name-char-box">
+          <div class="name-char-han">${ch.han}</div>
+          <div class="name-char-pin">${ch.pin}</div>
+          <div class="name-char-meaning">${ch.meaning}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  updateXP(5);
+  document.getElementById('name-input').value = '';
+}
+
+// ══════════════════════════════════════════════
+// RADICALS PAGE
+// ══════════════════════════════════════════════
+function renderRadicals() {
+  document.getElementById('radical-grid').innerHTML = RADICALS.map((r, i) => `
+    <div class="radical-card" onclick="showRadical(${i})">
+      <div class="radical-han">${r.han}</div>
+      <div class="radical-pin">${r.pin}</div>
+      <div class="radical-meaning">${r.meaning}</div>
+    </div>
+  `).join('');
+}
+
+function showRadical(i) {
+  const r = RADICALS[i];
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-han">${r.han}</div>
+    <div class="modal-pinyin">${r.pin}</div>
+    <div class="modal-tone">Radical: ${r.meaning}</div>
+    <div class="speak-center">
+      <button class="speak-btn" onclick="speak('${r.pin}')">🔊 Escuchar</button>
+    </div>
+    <div class="modal-section origin">
+      <h4>🧩 ¿Cómo se usa?</h4>
+      <p>Este radical aparece en muchos caracteres relacionados con <strong>${r.meaning.toLowerCase()}</strong>. Reconocerlo te ayuda a intuir el significado de caracteres desconocidos.</p>
+    </div>
+    <div class="modal-section examples">
+      <h4>📚 Caracteres con este radical</h4>
+      <p>${r.examples}</p>
+    </div>
+    <button class="btn-close" onclick="closeModal()">✕ Cerrar</button>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+  updateXP(3);
+}
+
+// ══════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════
+const QUIZ_TYPES = ['meaning', 'pinyin', 'char'];
+
+function nextQuestion() {
+  answered = false;
+  document.getElementById('q-feedback').textContent = '';
+  document.getElementById('q-next').style.display = 'none';
+
+  const type = QUIZ_TYPES[Math.floor(Math.random() * QUIZ_TYPES.length)];
+  const correct = CHARS[Math.floor(Math.random() * CHARS.length)];
+  const wrongs = CHARS.filter(c => c.han !== correct.han).sort(() => Math.random()-0.5).slice(0,3);
+  const options = [...wrongs, correct].sort(() => Math.random()-0.5);
+
+  currentQ = { correct, type };
+
+  let qChar, qPrompt, optFn;
+  if (type === 'meaning') {
+    qChar = correct.han;
+    qPrompt = '¿Qué significa este carácter?';
+    optFn = c => c.meaning;
+  } else if (type === 'pinyin') {
+    qChar = correct.han;
+    qPrompt = '¿Cuál es la pronunciación (pinyin)?';
+    optFn = c => c.pinyin;
+  } else {
+    qChar = correct.meaning;
+    qPrompt = '¿Cuál es el carácter correcto?';
+    optFn = c => c.han;
+  }
+
+  document.getElementById('q-char').style.fontFamily = type === 'char' ? 'Noto Sans SC' : "'Ma Shan Zheng', cursive";
+  document.getElementById('q-char').style.fontSize = type === 'char' ? '2rem' : '';
+  document.getElementById('q-char').textContent = qChar;
+  document.getElementById('q-prompt').textContent = qPrompt;
+  document.getElementById('q-options').innerHTML = options.map(o => `
+    <button class="quiz-opt" onclick="answerQ(this, '${o.han}')">${optFn(o)}</button>
+  `).join('');
+}
+
+function answerQ(btn, han) {
+  if (answered) return;
+  answered = true;
+  const isCorrect = han === currentQ.correct.han;
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach(b => {
+    b.disabled = true;
+    if (b === btn) b.classList.add(isCorrect ? 'correct' : 'wrong');
+    // Mark correct answer
+    const btnText = b.textContent;
+    const correctText = currentQ.type === 'meaning' ? currentQ.correct.meaning :
+                        currentQ.type === 'pinyin' ? currentQ.correct.pinyin : currentQ.correct.han;
+    if (btnText === correctText) b.classList.add('correct');
+  });
+
+  if (isCorrect) {
+    quizCorrect++;
+    quizStreak++;
+    const bonus = quizStreak >= 3 ? 20 : 10;
+    quizXP += bonus;
+    updateXP(bonus);
+    document.getElementById('q-feedback').innerHTML = `✅ ¡Correcto! ${quizStreak >= 3 ? '🔥 Racha x'+quizStreak+'!' : ''}`;
+  } else {
+    quizStreak = 0;
+    document.getElementById('q-feedback').textContent = `❌ Era: ${currentQ.correct.han} (${currentQ.correct.meaning})`;
+  }
+
+  document.getElementById('q-correct').textContent = quizCorrect;
+  document.getElementById('q-streak').textContent = quizStreak;
+  document.getElementById('q-xp').textContent = quizXP;
+  document.getElementById('q-next').style.display = 'inline-block';
+}
+
+// ══════════════════════════════════════════════
+// SPEECH
+// ══════════════════════════════════════════════
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN';
+  u.rate = 0.8;
+  window.speechSynthesis.speak(u);
+}
+
+// ══════════════════════════════════════════════
+// PWA / INSTALL
+// ══════════════════════════════════════════════
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').classList.add('show');
+});
+
+document.getElementById('btn-install').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') document.getElementById('install-banner').classList.remove('show');
+  deferredPrompt = null;
+});
+
+function dismissInstall() {
+  document.getElementById('install-banner').classList.remove('show');
+}
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(console.warn);
+}
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').classList.remove('show');
+  updateXP(50);
+});
+</script>
+</body>
+</html>
